@@ -16,9 +16,9 @@ struct Record
 {
     int id;
     int userId;
-    char name[20];
-    char country[100];
-    char phone[10];
+    char name[21];
+    char country[21];
+    char phone[11];
     char accountType[10];
     int accountNbr;
     double amount;
@@ -56,3 +56,4 @@ void initMenu(struct User *u);
 void checkAllAccounts(struct User u);
 int isDigit(char *str);
 void split(char *str, char **slice);
+int getLastIdFromFile(FILE *ptr, struct Record *r);

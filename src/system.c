@@ -17,9 +17,26 @@ int getAccountFromFile(FILE *ptr, char name[50], struct Record *r)
                   &r->amount,
                   r->accountType) == 11;
 }
+
+int getLastIdFromFile(FILE *ptr, struct Record *r)
+{
+    return fscanf(ptr, "%d %d %19s %d %d/%d/%d %99s %s %lf %9s",
+                  &r->id,
+                  &r->userId,
+                  r->name,
+                  &r->accountNbr,
+                  &r->deposit.month,
+                  &r->deposit.day,
+                  &r->deposit.year,
+                  r->country,
+                  r->phone,
+                  &r->amount,
+                  r->accountType) == 11;
+}
+
 void saveAccountToFile(FILE *ptr, struct User u, struct Record r)
 {
-    fprintf(ptr, "%d %d %s %d %d/%d/%d %s %s %lf %s\n\n",
+    fprintf(ptr, "%d %d %s %d %d/%d/%d %s %s %lf %s\n",
             r.id,
             u.id,
             u.name,
@@ -114,14 +131,16 @@ newAccount:
     month = malloc(3);
     year = malloc(5);
 
-    printf("\nEnter today's date(dd/mm/yyyy):");
+    printf("Enter Today's date:\n");
+    printf("day: ");
     scanf("%s", day);
+    printf("month: ");
     scanf("%s", month);
+    printf("year: ");
     scanf("%s", year);
-    printf("day: %s\nmonth: %s\nyear: %s\n", day, month, year);
     if (isDigit(day) == 0 || isDigit(month) == 0 || isDigit(year) == 0)
     {
-        printf("Insert a valjknnid date!\n");
+        printf("Insert a valid date!\n");
         waiting();
         goto newAccount;
     }
@@ -131,7 +150,6 @@ newAccount:
     free(day);
     free(month);
     free(year);
-    printf("date: %d/%d/%d\n", r.deposit.month, r.deposit.day, r.deposit.year);
     if (r.deposit.month > 12 || r.deposit.month < 1 || r.deposit.day > 31 || r.deposit.day < 1 || r.deposit.year < 2020)
     {
         printf("Insert a valid date!\n");
@@ -167,7 +185,7 @@ accountNumber:
     }
 accountCountry:
     printf("\nEnter the country:");
-    scanf("%s", r.country);
+    scanf("%20s", r.country);
     if (isDigit(r.country) != 0)
     {
         printf("Insert a valid country!");
@@ -178,7 +196,7 @@ accountPhone:
     printf("\nEnter the phone number:");
     char *phone;
     phone = malloc(11);
-    scanf("%s", phone);
+    scanf("%10s", phone);
     if (isDigit(phone) == 0 || strlen(phone) != 10 || phone[0] != '0')
     {
         printf("Insert a valid phone number!");
@@ -186,7 +204,7 @@ accountPhone:
         goto accountPhone;
     }
     strcpy(r.phone, phone);
-// free(phone);
+    free(phone);
 accountAmount:
     char *amount;
     amount = malloc(11);
@@ -216,7 +234,6 @@ AccountType:
     char *accountType;
     accountType = malloc(11);
     scanf("%s", accountType);
-    printf("%s ----- %s \n", r.phone, r.accountType);
     if (strcmp(accountType, "saving") != 0 && strcmp(accountType, "current") != 0 && strcmp(accountType, "fixed01") != 0 && strcmp(accountType, "fixed02") != 0 && strcmp(accountType, "fixed03") != 0)
     {
         printf("Insert a valid account type!\n");
@@ -224,6 +241,11 @@ AccountType:
         goto AccountType;
     }
     strcpy(r.accountType, accountType);
+    while (getLastIdFromFile(pf, &cr))
+    {
+        r.id = cr.id + 1;
+        printf("%dyjgyguyguy\n", cr.id);
+    }
 
     saveAccountToFile(pf, u, r);
 
